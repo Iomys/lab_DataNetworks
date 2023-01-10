@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 The script measures the power and the temperature from the plug and pushes them on the MQTT broker.
 The script reads the @set topic and shut on/off the plug's relays on commands

@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 This script gets the monitoring measurements from MQTT and pushes the on the influx db
 """
