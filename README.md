@@ -138,9 +138,11 @@ Pour faire tourner le serveur en https, il est nécessaire de modifier la ligne 
 L'utilisation depuis grafana ne fonctionne cependant pas : une possibilité est que le raspberry pi est sur le réseau device de la HES alors que le serveur grafana est accessible depuis l'extérieur. Ce serait une faille de sécurité pour le réseau de l'école de pouvoir effectuer des requêtes à l'intérieur du serveur grafana pour accéder aux autres appareils. Le serveur grafana est probablement isolé du reste de l'infrastructure.
 
 ## Grafana
+Une dashboard grafana a été développée pour visualiser les données de la DB Influx et agir sur les boutons (cela ne fonctionne pas)
+
 
 Accéder à Grafana : [grafana.sdi.hevs.ch](https://grafana.sdi.hevs.ch/d/jMNJTM0Vk/lab-datanetworks-valentin-sandoz?orgId=31&from=now-3h&to=now)
-Une dashboard grafana a été développée pour visualiser les données de la DB Influx et agir sur les boutons (cela ne fonctionne pas)
+
 
 ![img.png](img.png)
 
