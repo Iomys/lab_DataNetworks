@@ -3,34 +3,23 @@ from datetime import datetime
 from influxdb_client import InfluxDBClient, Point, WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS, WriteOptions
 
-# You can generate an API token from the "API Tokens Tab" in the UI
-token = "NA34jiwvVvgLnOUzMsIVtvgeVvsXxgapZek526GhfePDktIgp8pnXzmKuhn8LYfvOSgymbzce57g12wSVNUbeQ=="
-org = "SIn09"
-bucket = "SIn09"
-
-
-# with InfluxDBClient(url="https://influx.sdi.hevs.ch", token=token, org=org) as mqtt_client:
-#     point = Point("mem") \
-#         .tag("host", "host1") \
-#         .field("used_percent", 23.43234543) \
-#         .time(datetime.utcnow(), WritePrecision.NS)
-#
-#     mqtt_client.write(bucket, org, point)
-
 
 class DbConnector:
-
+    """
+    Connector to the influx db
+    """
     def __init__(self, token, org, bucket):
         self.client = InfluxDBClient(url="https://influx.sdi.hevs.ch", token=token, org=org)
         self.org = org
         self.bucket = bucket
 
+        # Options to write measures in batch
         options = WriteOptions(
-            batch_size=500,
-            flush_interval=10_000,
-            jitter_interval=2_000,
+            batch_size=500,  # every 500 measure or
+            flush_interval=10_000,  # every 10 seconds
+            jitter_interval=2_000,  # +- 2 second
             retry_interval=5_000,
-            max_retries=5,
+            max_retries=5,          # retry max 5 times if connection problem
             max_retry_delay=30_000,
             exponential_base=2
         )
@@ -46,6 +35,3 @@ class DbConnector:
             .time(datetime.utcnow())
 
         self.influx_writer.write(self.bucket, self.org, point)
-
-
-
