@@ -37,7 +37,22 @@ source venv/bin/activate
 
 ## Fichier de configuration
 
-Il est nécessaire de remplir le fichier de configuration [crendentials.toml](https://github.com/Iomys/lab_DataNetworks/blob/main/credentials.toml) avec les données du broker mqtt, de la mystrom switch et du server influxdb.
+Il est nécessaire de remplir le fichier de configuration [crendentials.toml](credentials.toml) avec les données du broker mqtt, de la mystrom switch et du server influxdb, selon ce format : 
+```toml
+[MQTT]
+broker =
+username =
+password =
+
+[InfluxDB]
+token =
+org =
+bucket =
+
+[MyStromSwitch]
+name =
+macAdress = 
+```
 
 ## Fonctionnement des scripts en arrière plan
 Afin que les scripts fonctionnent en arrière-plan sur la raspberry-pi, nous allons créer un *service* avec systemd.
@@ -102,4 +117,27 @@ sudo systemctl start mqtt_2_influx.service  # Démarrer le service (pour la prem
 Il est possible de vérifier le status du service en entrant `sudo systemtl status mqtt_2_influx.service`
 
 ## Serveur Flask
-Le serveur Flask est encore en développement
+Le serveur Flask permet de lier le bouton grafana au reste du système en transformant la reqête REST en requête MQTT. 
+
+### Serveur de développement
+Attention, le serveur utilisé ici est un serveur de développement, il n'est pas sécurisé et ne doit pas être allumé par un service 24h/24. Il serait nécessaire d'utiliser un autre service pour lancer un serveur WSGI comme Waitress. Le cas d'un serveur en mode production n'a pas été abordé dans ce laboratoire. La documentation Flask donne les informations pour le déploiement du serveur sur cette [page](https://flask.palletsprojects.com/en/2.2.x/tutorial/deploy/).
+
+### Génération du certificat
+
+Cette commande permet de générer un certificat SSL pour que le serveur tourne en https. Seulement, il n'est pas vérifié, donc la plupart des navigateurs ou outils comme *requests* refusent de s'y connecter.
+```bash
+openssl req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 365
+```
+
+Pour faire tourner le serveur en https, il est nécessaire de modifier la ligne de lancement de celui-ci par `app.run(host='blackpi009.hevs.ch',port=8080,ssl_context=('cert.pem',
+'key.pem'))`
+
+### Prolème de fonctionnement
+L'utilisation depuis grafana ne fonctionne cependant pas : une possibilité est que le raspberry pi est sur le réseau device de la HES alors que le serveur grafana est accessible depuis l'extérieur. Ce serait une faille de sécurité pour le réseau de l'école de pouvoir effectuer des requêtes à l'intérieur du serveur grafana pour accéder aux autres appareils. Le serveur grafana est probablement isolé du reste de l'infrastructure.
+
+## Grafana
+Une dashboard grafana a été développée pour visualiser les données de la DB Influx et agir sur les boutons (cela ne fonctionne pas)
+
+![img.png](img.png)
+
+Le schéma Grafana JSON est disponible dans le fichier [grafana.json](grafana.json)
