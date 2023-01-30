@@ -63,4 +63,4 @@ def post_plug_relay(plug):
 
 
 if __name__ == "__main__":
-    app.run(host='blackpi009.hevs.ch', port=8080)
+    app.run(host='blackpi009.hevs.ch', port=8080, ssl_context=('cert.pem', 'key.pem'))
