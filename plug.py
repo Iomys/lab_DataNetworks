@@ -1,3 +1,8 @@
+"""
+Library to manage and use a MyStromSwitch
+author : Valentin Sandoz, valentin.sandoz@students.hevs.ch
+date : 30.01.2023
+"""
 import requests
 import logging
 
@@ -39,10 +44,16 @@ class MyStromSwitch:
 
     def _get_version(self):
         headers = {"Accept": "application/json"}
-        r = requests.get(f"{self.host}/api/v1/info")
+        r = requests.get(f"{self.host}/api/v1/info", headers=headers)
         return r.json()
 
     def _request(self, path, params=None):
+        """
+        Util method to do a request to the switch's API
+        :param path: Path of the requests after the hostname (http://example.com/{path})
+        :param params: Dict of params to pass to the request
+        :return: JSON response or content if not JSON
+        """
         headers = {"Accept": "application/json"}
         r = requests.get(f"{self.host}/{path}", headers=headers, params=params)
         logger.debug(r.request.url)
@@ -52,17 +63,33 @@ class MyStromSwitch:
             return r.content
 
     def getState(self):
+        """
+
+        :return: the current state of the switch
+        """
         return self._request("report")["relay"]
 
     def getTemp(self):
+        """
+        Get the temperature measured by the switch (not very accurate!)
+        :return: temperature in celcius
+        """
         # if self.version == 1:
         #    raise Exception("Version 1 of the Mystrom Switch has no temperature sensor")
         return requests.get(f"{self.host}/temp").json()["compensated"]
 
     def getPower(self):
+        """
+        Get the power of the switch
+        :return: power in watts
+        """
         return self._request("report")["power"]
 
     def toggle(self):
+        """
+        Toogle the switch
+        :return: the new switch's state (
+        """
         return self._request("toggle")
 
     def setState(self, state):
